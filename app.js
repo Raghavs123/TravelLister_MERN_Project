@@ -24,10 +24,10 @@ const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
 // local system mongoDB database
-// const MONGO_URL = "mongodb://127.0.0.1:27017/travellister";
+const MONGO_URL = "mongodb://127.0.0.1:27017/travellister";
 
 // cloud or Mongo Atlas mongoDB database 
-const dbURL = process.env.ATLASDB_URL; 
+// const dbURL = process.env.ATLASDB_URL; 
 
 main().then(() => {
     console.log("connected to DB");
@@ -36,8 +36,8 @@ main().then(() => {
 })
 
 async function main(){
-    // mongoose.connect(MONGO_URL); // mongoose connects with local system mongoDB database
-    mongoose.connect(dbURL);  // mongoose connects with cloud mongoDB database
+    mongoose.connect(MONGO_URL); // mongoose connects with local system mongoDB database
+    // mongoose.connect(dbURL);  // mongoose connects with cloud mongoDB database
 }
 
 app.set("view engine", "ejs");
