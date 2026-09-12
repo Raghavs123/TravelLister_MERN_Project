@@ -73,6 +73,12 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());     // To serialize user
 passport.deserializeUser(User.deserializeUser()); // To deserialize user
 
+// Middleware to set currentPath variable for all routes (Search Bar should only be displayed on listings index page)
+app.use((req, res, next) => {
+    res.locals.currentPath = req.path;
+    next();
+});
+
 // Middleware which works just after incoming request & before sending response
 app.use((req,res,next) => {
     res.locals.success = req.flash("success");  // This success variable will be accessed in flash.ejs (success flash is trigerred)

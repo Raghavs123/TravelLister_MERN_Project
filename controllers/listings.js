@@ -1,12 +1,26 @@
 const Listing = require("../models/listing.js");
-const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
-const mapToken = process.env.MAP_TOKEN;
-const geocodingClient = mbxGeocoding({ accessToken: mapToken });
 
-// Index Route
-module.exports.index = async (req,res,next) => {
-    const allListings = await Listing.find({});
-    res.render("./listings/index.ejs", {allListings});
+// Index Route (Search Bar Implementation)
+module.exports.index = async (req, res, next) => {
+    const search = req.query.search?.trim() || "";
+
+    const filter = search
+        ? {
+            $or: [
+                { title: { $regex: search, $options: "i" } },       // Search for keywords in the title field
+                { location: { $regex: search, $options: "i" } },    // Search for keywords in the location field
+                { country: { $regex: search, $options: "i" } },     // Search for keywords in the country field
+                // { description: { $regex: search, $options: "i" } }  // Search for keywords in the description field
+            ]
+        }
+        : {};
+
+    const allListings = await Listing.find(filter);
+
+    res.render("./listings/index.ejs", {
+        allListings,
+        search
+    });
 };
 
 // New Route
@@ -82,18 +96,6 @@ module.exports.create = async (req,res,next) => {
     //     throw new ExpressError(400, result.error);
     // }
 
-    // Geocoding logic
-    let response = await geocodingClient
-        .forwardGeocode({
-            query: req.body.listing.location,
-            limit: 1
-        })
-        .send()  
-
-    // console.log(response.body.features);
-    // console.log(response.body.features[0].geometry);
-    // res.send("done!");
-
     // Steps after Cloudinary Setup (Image Upload)
     let url = req.file.path;
     let filename = req.file.filename;
@@ -106,12 +108,7 @@ module.exports.create = async (req,res,next) => {
 
     newListing.image = {url, filename};  // After Cloudinary Changes in listing schema
 
-    // Geocoding geometry in listing schema
-    newListing.geometry = response.body.features[0].geometry;
-
-    let savedListing = await newListing.save();
-    console.log(savedListing);
-
+    await newListing.save();
     req.flash("success", "New Listing Created Successfully!!!");
     // console.log(newListing);
     res.redirect("/listings");
