@@ -43,8 +43,9 @@
       <!-- Search Option in Navbar -->
       <% if (currentPath==="/listings" ) { %>
         <div class="navbar-nav ms-auto">
-          <form class="d-flex" method="GET" action="/listings">
-            <input class="form-control me-2 search-input" type="search" name="search" placeholder="Search destinations"
+          <form id="listing-search-form" class="d-flex" method="GET" action="/listings">
+            <input id="listing-search-input" class="form-control me-2 search-input" type="search" name="search" placeholder="Search destinations"
+              autocomplete="off"
               value="<%= typeof search !== 'undefined' ? search : '' %>">
             <button class="btn search-btn" type="submit">
               <i class="fa-solid fa-magnifying-glass"></i>

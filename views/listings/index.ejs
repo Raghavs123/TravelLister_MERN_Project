@@ -105,9 +105,10 @@
         <button>Create New Listing</button>
     </form> -->
 
-    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+    <div id="search-results" class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
         <% for(let listing of allListings){ %>
-            <a href="/listings/<%= listing._id %>" class="listing-link">
+            <a href="/listings/<%= listing._id %>" class="listing-link"
+                data-search-text="<%= `${listing.title} ${listing.location} ${listing.country}`.toLowerCase() %>">
                 <div class="card listing-card" style="width: 21rem;">
                     <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 16rem;">
                     <div class="card-img-overlay"></div>
@@ -122,6 +123,8 @@
             </a>
         <% } %>        
     </div>
+
+    <p id="search-empty" class="text-center mt-4 d-none"></p>
 
     <!--  <ul> -->
         <!-- <% for(let listing of allListings){ %> -->
