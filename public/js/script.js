@@ -17,3 +17,25 @@
       }, false)
     })
   })()
+
+const searchForm = document.getElementById('listing-search-form')
+const searchInput = document.getElementById('listing-search-input')
+const searchResults = document.getElementById('search-results')
+const searchEmpty = document.getElementById('search-empty')
+
+if (searchForm && searchInput && searchResults && searchEmpty) {
+  searchInput.addEventListener('input', () => {
+    const search = searchInput.value.trim().toLowerCase()
+    const listings = searchResults.querySelectorAll('.listing-link')
+    let visibleListings = 0
+
+    listings.forEach((listing) => {
+      const matches = listing.dataset.searchText.includes(search)
+      listing.classList.toggle('d-none', !matches)
+      if (matches) visibleListings += 1
+    })
+
+    searchEmpty.textContent = `No listings found for "${searchInput.value.trim()}".`
+    searchEmpty.classList.toggle('d-none', visibleListings > 0 || !search)
+  })
+}

@@ -20,6 +20,7 @@ router.route("/")
 //     res.send(req.file);
 // });
 
+router.get("/search", wrapAsync(listingController.search)); // Live-search data
 router.get("/new", isLoggedIn, listingController.new);  // New Route
 router.get("/:id/edit", isOwner, isLoggedIn, wrapAsync(listingController.edit));  // Edit Route
 

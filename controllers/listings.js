@@ -1,26 +1,39 @@
 const Listing = require("../models/listing.js");
 
+const getSearchFilter = (search) => {
+    if (!search) return {};
+
+    const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return {
+        $or: [
+            { title: { $regex: escapedSearch, $options: "i" } },
+            { location: { $regex: escapedSearch, $options: "i" } },
+            { country: { $regex: escapedSearch, $options: "i" } }
+        ]
+    };
+};
+
 // Index Route (Search Bar Implementation)
 module.exports.index = async (req, res, next) => {
     const search = req.query.search?.trim() || "";
-
-    const filter = search
-        ? {
-            $or: [
-                { title: { $regex: search, $options: "i" } },       // Search for keywords in the title field
-                { location: { $regex: search, $options: "i" } },    // Search for keywords in the location field
-                { country: { $regex: search, $options: "i" } },     // Search for keywords in the country field
-                // { description: { $regex: search, $options: "i" } }  // Search for keywords in the description field
-            ]
-        }
-        : {};
-
-    const allListings = await Listing.find(filter);
+    const allListings = await Listing.find(getSearchFilter(search));
 
     res.render("./listings/index.ejs", {
         allListings,
         search
     });
+};
+
+module.exports.search = async (req, res) => {
+    const search = req.query.search?.trim() || "";
+    const listings = await Listing.find(getSearchFilter(search)).lean();
+
+    res.json(listings.map((listing) => ({
+        id: listing._id,
+        title: listing.title,
+        price: listing.price,
+        imageUrl: listing.image?.url || ""
+    })));
 };
 
 // New Route
